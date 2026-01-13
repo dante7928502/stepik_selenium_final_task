@@ -2,3 +2,4 @@ __pycache__
 .pytest_cache
 .vscode
 stepik_selenium_final_task.code-workspace
+pytest.ini
