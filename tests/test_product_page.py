@@ -2,6 +2,7 @@ from pages.product_page import ProductPage
 from pages.login_page import LoginPage
 from pages.basket_page import BasketPage
 import pytest
+import faker
 
 
 @pytest.mark.parametrize(
@@ -40,7 +41,7 @@ def test_guest_can_add_product_to_basket(browser, link_promo):
 
     assert (
         product_name == product_name_in_notify
-    ), f"Expected {product_name} in notify, but got {product_name_in_notify}"
+    ), f'Expected "{product_name}" in notify, but got "{product_name_in_notify}"'
 
     assert (
         product_price == basket_price
@@ -104,3 +105,44 @@ def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     assert (
         basket_page.basket_is_empty_notify()
     ), "Expected notify about empty basket, but didn't get any"
+
+@pytest.fixture(scope="function", autouse=True)
+def setup(browser):
+    link = "http://selenium1py.pythonanywhere.com/accounts/login/"
+    email = faker.Faker().email(domain="dante7928.com")
+    password = faker.Faker().password(length=10)
+
+    login_page = LoginPage(browser, link)
+    login_page.open()
+    login_page.register_new_user(email, password)
+    login_page.should_be_authorized_user()
+
+@pytest.mark.usefixtures("setup")
+class TestUserAddToBasketFromProductPage:
+    def test_user_cant_see_success_message(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+        product_page = ProductPage(browser, link)
+        product_page.open()
+        assert (
+            product_page.should_not_be_success_message()
+        ), "Success message is presented, but should not be"
+
+    def test_user_can_add_product_to_basket(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207"
+        product_page = ProductPage(browser, link)
+        product_page.open()
+        product_page.add_product_to_basket()
+
+        product_name = product_page.find_product_name()
+        product_name_in_notify = product_page.find_product_name_in_notify()
+
+        product_price = product_page.find_product_price()
+        basket_price = product_page.find_basket_price()
+
+        assert (
+            product_name == product_name_in_notify
+        ), f'Expected "{product_name}" in notify, but got "{product_name_in_notify}"'
+
+        assert (
+            product_price == basket_price
+        ), f'Expected "Basket Price" = product price, but it\'s not'
