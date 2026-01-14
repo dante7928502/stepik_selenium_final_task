@@ -5,6 +5,12 @@ class BasePageLocators:
     LOGIN_LINK = (By.CSS_SELECTOR, "#login_link")
 
 
+class BasketPageLocators:
+    BASKET_LINK = (By.CSS_SELECTOR, ".basket-mini .btn-group > a")
+    BASKET_PRODUCT = (By.CSS_SELECTOR, "#basket_formset")
+    BASKET_EMPTY_NOTIFY = (By.CSS_SELECTOR, "#content_inner > p")
+
+
 class LoginPageLocators:
     LOGIN_FORM = (By.CSS_SELECTOR, "#login_form")
     REGISTER_FORM = (By.CSS_SELECTOR, "#register_form")
