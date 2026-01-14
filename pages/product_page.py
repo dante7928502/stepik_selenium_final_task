@@ -24,11 +24,7 @@ class ProductPage(BasePage):
         return self.browser.find_element(*ProductPageLocators.BASKET_PRICE).text
 
     def should_not_be_success_message(self):
-        assert self.is_not_element_present(
-            *ProductPageLocators.SUCCESS_MESSAGE
-        ), "Success message is presented, but should not be"
+        return self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE)
 
     def success_msg_is_dissapeared(self):
-        assert self.is_disappeared(
-            *ProductPageLocators.SUCCESS_MESSAGE
-        ), "Success message should dissapear, but it's still here"
+        return self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE)

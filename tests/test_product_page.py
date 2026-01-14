@@ -43,3 +43,34 @@ def test_guest_can_add_product_to_basket(browser, link_promo):
     assert (
         product_price == basket_price
     ), f'Expected "Basket Price" = product price, but it\'s not'
+
+
+@pytest.mark.xfail(reason="that is negative check")
+def test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
+    link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+    product_page = ProductPage(browser, link)
+    product_page.open()
+    product_page.add_product_to_basket()
+    assert (
+        product_page.should_not_be_success_message()
+    ), "Success message is presented, but should not be"
+
+
+def test_guest_cant_see_success_message(browser):
+    link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+    product_page = ProductPage(browser, link)
+    product_page.open()
+    assert (
+        product_page.should_not_be_success_message()
+    ), "Success message is presented, but should not be"
+
+
+@pytest.mark.xfail(reason="that is negative check")
+def test_message_disappeared_after_adding_product_to_basket(browser):
+    link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+    product_page = ProductPage(browser, link)
+    product_page.open()
+    product_page.add_product_to_basket()
+    assert (
+        product_page.success_msg_is_dissapeared()
+    ), "Success message should dissapear, but it's still here"

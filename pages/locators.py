@@ -22,3 +22,4 @@ class ProductPageLocators:
         By.CSS_SELECTOR,
         "#messages > div.alert-safe > div > p:nth-child(1) > strong",
     )
+    SUCCESS_MESSAGE = (By.CSS_SELECTOR, ".alert-success:nth-child(1)")
