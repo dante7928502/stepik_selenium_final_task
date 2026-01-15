@@ -1,4 +1,29 @@
-__pycache__
-.pytest_cache
-.vscode
-stepik_selenium_final_task.code-workspace
+# В корне проекта создайте файл .gitignore
+cat > .gitignore << EOF
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Selenium
+*.png
+*.jpg
+geckodriver.log
+chromedriver.log
+EOF

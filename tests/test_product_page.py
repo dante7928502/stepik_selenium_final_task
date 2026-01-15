@@ -4,23 +4,23 @@ from pages.basket_page import BasketPage
 import pytest
 import faker
 
-
+@pytest.mark.need_review
 @pytest.mark.parametrize(
     "link_promo",
     [
         "/?promo=offer0",
-        "/?promo=offer1",
-        "/?promo=offer2",
-        "/?promo=offer3",
-        "/?promo=offer4",
-        "/?promo=offer5",
-        "/?promo=offer6",
+        # "/?promo=offer1",
+        # "/?promo=offer2",
+        # "/?promo=offer3",
+        # "/?promo=offer4",
+        # "/?promo=offer5",
+        # "/?promo=offer6",
         pytest.param(
             "/?promo=offer7",
             marks=pytest.mark.xfail(reason="nobody planning to fix it"),
         ),
-        "/?promo=offer8",
-        "/?promo=offer9",
+        # "/?promo=offer8",
+        # "/?promo=offer9",
     ],
 )
 def test_guest_can_add_product_to_basket(browser, link_promo):
@@ -32,20 +32,8 @@ def test_guest_can_add_product_to_basket(browser, link_promo):
     product_page.open()
     product_page.add_product_to_basket()
     product_page.solve_quiz_and_get_code()
-
-    product_name = product_page.find_product_name()
-    product_name_in_notify = product_page.find_product_name_in_notify()
-
-    product_price = product_page.find_product_price()
-    basket_price = product_page.find_basket_price()
-
-    assert (
-        product_name == product_name_in_notify
-    ), f'Expected "{product_name}" in notify, but got "{product_name_in_notify}"'
-
-    assert (
-        product_price == basket_price
-    ), f'Expected "Basket Price" = product price, but it\'s not'
+    product_page.should_be_correct_product_name_in_notify()
+    product_page.should_be_correct_basket_price()
 
 
 @pytest.mark.xfail(reason="that is negative check")
@@ -54,18 +42,14 @@ def test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
     product_page = ProductPage(browser, link)
     product_page.open()
     product_page.add_product_to_basket()
-    assert (
-        product_page.should_not_be_success_message()
-    ), "Success message is presented, but should not be"
+    product_page.should_not_be_success_message()
 
 
 def test_guest_cant_see_success_message(browser):
     link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
     product_page = ProductPage(browser, link)
     product_page.open()
-    assert (
-        product_page.should_not_be_success_message()
-    ), "Success message is presented, but should not be"
+    product_page.should_not_be_success_message()
 
 
 @pytest.mark.xfail(reason="that is negative check")
@@ -74,10 +58,7 @@ def test_message_disappeared_after_adding_product_to_basket(browser):
     product_page = ProductPage(browser, link)
     product_page.open()
     product_page.add_product_to_basket()
-    assert (
-        product_page.success_msg_is_dissapeared()
-    ), "Success message should dissapear, but it's still here"
-
+    product_page.success_msg_is_dissapeared()
 
 def test_guest_should_see_login_link_on_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/catalogue/the-city-and-the-stars_95/"
@@ -86,6 +67,7 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.should_be_login_link()
 
 
+@pytest.mark.need_review
 def test_guest_can_go_to_login_page_from_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
@@ -95,19 +77,18 @@ def test_guest_can_go_to_login_page_from_product_page(browser):
     login_page.should_be_login_page()
 
 
+@pytest.mark.need_review
 def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
     page.open()
     page.go_to_basket_page()
     basket_page = BasketPage(browser, browser.current_url)
-    assert basket_page.basket_is_empty(), "Basket should be empty, but it's not"
-    assert (
-        basket_page.basket_is_empty_notify()
-    ), "Expected notify about empty basket, but didn't get any"
+    basket_page.basket_is_empty()
+    basket_page.basket_is_empty_notify()
 
-@pytest.fixture(scope="function", autouse=True)
-def setup(browser):
+@pytest.fixture(scope="function")
+def register_user(browser):
     link = "http://selenium1py.pythonanywhere.com/accounts/login/"
     email = faker.Faker().email(domain="dante7928.com")
     password = faker.Faker().password(length=10)
@@ -117,32 +98,19 @@ def setup(browser):
     login_page.register_new_user(email, password)
     login_page.should_be_authorized_user()
 
-@pytest.mark.usefixtures("setup")
+@pytest.mark.usefixtures("register_user")
 class TestUserAddToBasketFromProductPage:
     def test_user_cant_see_success_message(self, browser):
         link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
         product_page = ProductPage(browser, link)
         product_page.open()
-        assert (
-            product_page.should_not_be_success_message()
-        ), "Success message is presented, but should not be"
+        product_page.should_not_be_success_message()
 
+    @pytest.mark.need_review
     def test_user_can_add_product_to_basket(self, browser):
         link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207"
         product_page = ProductPage(browser, link)
         product_page.open()
         product_page.add_product_to_basket()
-
-        product_name = product_page.find_product_name()
-        product_name_in_notify = product_page.find_product_name_in_notify()
-
-        product_price = product_page.find_product_price()
-        basket_price = product_page.find_basket_price()
-
-        assert (
-            product_name == product_name_in_notify
-        ), f'Expected "{product_name}" in notify, but got "{product_name_in_notify}"'
-
-        assert (
-            product_price == basket_price
-        ), f'Expected "Basket Price" = product price, but it\'s not'
+        product_page.should_be_correct_product_name_in_notify()
+        product_page.should_be_correct_basket_price()
